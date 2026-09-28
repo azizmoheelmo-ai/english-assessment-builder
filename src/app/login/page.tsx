@@ -27,13 +27,18 @@ export default function LoginPage() {
         return;
       }
     } else {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { full_name: fullName } },
       });
       if (error) {
         setError(error.message);
+        setLoading(false);
+        return;
+      }
+      if (!data.session) {
+        setError("تم إنشاء الحساب! تحقق من بريدك الإلكتروني واضغط رابط التأكيد قبل تسجيل الدخول.");
         setLoading(false);
         return;
       }
