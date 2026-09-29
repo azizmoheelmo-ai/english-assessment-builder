@@ -1,19 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useLinkStatus } from "next/link";
-
-export function LinkPendingHint({ dark = false }: { dark?: boolean }) {
-  const { pending } = useLinkStatus();
-  if (!pending) return null;
-  return (
-    <span
-      className={`spinner ${dark ? "spinner-dark" : ""}`}
-      aria-hidden
-      style={{ marginInlineStart: 6 }}
-    />
-  );
-}
+import { PendingLink } from "@/components/pending-link";
 
 export function ModelTab({
   href,
@@ -25,9 +12,8 @@ export function ModelTab({
   label: string;
 }) {
   return (
-    <Link
+    <PendingLink
       href={href}
-      prefetch={false}
       className="tab"
       style={{
         padding: "9px 18px",
@@ -43,8 +29,18 @@ export function ModelTab({
         alignItems: "center",
       }}
     >
-      {label}
-      <LinkPendingHint dark={!active} />
-    </Link>
+      {(pending) => (
+        <>
+          {label}
+          {pending && (
+            <span
+              className={`spinner ${active ? "" : "spinner-dark"}`}
+              aria-hidden
+              style={{ marginInlineStart: 6 }}
+            />
+          )}
+        </>
+      )}
+    </PendingLink>
   );
 }

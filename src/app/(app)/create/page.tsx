@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { generateAssessment } from "./actions";
-import { SubmitButton } from "@/components/submit-button";
+import { CreateForm } from "./create-form";
 
 export default async function CreatePage() {
   const supabase = await createClient();
@@ -43,39 +42,7 @@ export default async function CreatePage() {
         </div>
       </div>
 
-      <form action={generateAssessment} className="card" style={{ padding: 22, display: "flex", flexDirection: "column", gap: 18 }}>
-        <div>
-          <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>عنوان الاختبار</label>
-          <input className="field-input" name="title" defaultValue="Quiz — Mega Goal 3, Unit 1" required />
-        </div>
-
-        <div>
-          <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>عدد الأسئلة</label>
-          <input className="field-input en" type="number" name="questionCount" defaultValue={20} min={1} max={total} />
-        </div>
-
-        <div>
-          <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>عدد النماذج (1–4)</label>
-          <select className="field-select" name="modelCount" defaultValue={2}>
-            <option value={1}>1 (نموذج واحد)</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-          </select>
-        </div>
-
-        <div>
-          <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>توزيع الصعوبة (%)</label>
-          <div style={{ display: "flex", gap: 10 }}>
-            <input className="field-input en" type="number" name="pctEasy" defaultValue={50} min={0} max={100} title="Easy %" />
-            <input className="field-input en" type="number" name="pctMedium" defaultValue={35} min={0} max={100} title="Medium %" />
-            <input className="field-input en" type="number" name="pctHard" defaultValue={15} min={0} max={100} title="Hard %" />
-          </div>
-          <div style={{ fontSize: 11, color: "var(--faint)", marginTop: 4 }}>بالترتيب: Easy · Medium · Hard</div>
-        </div>
-
-        <SubmitButton idleLabel="توليد الاختبار →" pendingLabel="جاري إنشاء الاختبار..." />
-      </form>
+      <CreateForm total={total} />
     </div>
   );
 }

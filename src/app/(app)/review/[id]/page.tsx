@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PrintButton } from "./print-button";
-import { ModelTab, LinkPendingHint } from "./model-tab";
+import { ModelTab } from "./model-tab";
+import { PendingLink } from "@/components/pending-link";
 
 type QRow = {
   position: number;
@@ -61,10 +61,14 @@ export default async function ReviewPage({
           </div>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <Link href={`/review/${id}?model=${activeLabel}${showKey ? "" : "&key=1"}`} prefetch={false} className="btn btn-secondary">
-            {showKey ? "إخفاء المفتاح" : "عرض مفتاح الإجابة"}
-            <LinkPendingHint dark />
-          </Link>
+          <PendingLink href={`/review/${id}?model=${activeLabel}${showKey ? "" : "&key=1"}`} className="btn btn-secondary">
+            {(pending) => (
+              <>
+                {showKey ? "إخفاء المفتاح" : "عرض مفتاح الإجابة"}
+                {pending && <span className="spinner spinner-dark" aria-hidden style={{ marginInlineStart: 6 }} />}
+              </>
+            )}
+          </PendingLink>
           <PrintButton />
         </div>
       </div>
