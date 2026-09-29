@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { generateAssessment } from "./actions";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function CreatePage() {
   const supabase = await createClient();
@@ -73,9 +74,7 @@ export default async function CreatePage() {
           <div style={{ fontSize: 11, color: "var(--faint)", marginTop: 4 }}>بالترتيب: Easy · Medium · Hard</div>
         </div>
 
-        <button type="submit" className="btn btn-primary" style={{ justifyContent: "center", marginTop: 6 }}>
-          توليد الاختبار →
-        </button>
+        <SubmitButton idleLabel="توليد الاختبار →" pendingLabel="جاري إنشاء الاختبار..." />
       </form>
     </div>
   );

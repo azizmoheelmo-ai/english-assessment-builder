@@ -66,6 +66,24 @@ html, body {
 .btn-secondary:hover { background: #fafaf7; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 
+.spinner {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .45);
+  border-top-color: #fff;
+  animation: spin .6s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.spinner-dark {
+  border-color: rgba(15, 111, 92, .25);
+  border-top-color: var(--brand);
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);

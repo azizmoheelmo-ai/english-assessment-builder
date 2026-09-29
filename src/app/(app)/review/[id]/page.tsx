@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PrintButton } from "./print-button";
+import { ModelTab, LinkPendingHint } from "./model-tab";
 
 type QRow = {
   position: number;
@@ -60,8 +61,9 @@ export default async function ReviewPage({
           </div>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <Link href={`/review/${id}?model=${activeLabel}${showKey ? "" : "&key=1"}`} className="btn btn-secondary">
+          <Link href={`/review/${id}?model=${activeLabel}${showKey ? "" : "&key=1"}`} prefetch={false} className="btn btn-secondary">
             {showKey ? "إخفاء المفتاح" : "عرض مفتاح الإجابة"}
+            <LinkPendingHint dark />
           </Link>
           <PrintButton />
         </div>
@@ -69,24 +71,12 @@ export default async function ReviewPage({
 
       <div className="no-print" style={{ display: "flex", gap: 8 }}>
         {models.map((m) => (
-          <Link
+          <ModelTab
             key={m.id}
             href={`/review/${id}?model=${m.label}${showKey ? "&key=1" : ""}`}
-            className="tab"
-            style={{
-              padding: "9px 18px",
-              borderRadius: 9,
-              fontSize: 13,
-              fontWeight: 700,
-              fontFamily: "'IBM Plex Sans'",
-              background: m.label === activeLabel ? "var(--brand)" : "#fff",
-              color: m.label === activeLabel ? "#fff" : "var(--muted)",
-              border: m.label === activeLabel ? "none" : "1px solid var(--border)",
-              textDecoration: "none",
-            }}
-          >
-            Model {m.label}
-          </Link>
+            active={m.label === activeLabel}
+            label={`Model ${m.label}`}
+          />
         ))}
       </div>
 
