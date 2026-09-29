@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -13,39 +13,60 @@ export default function LoginPage() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const submittingRef = useRef(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Guard against double taps / double form submissions firing two
+    // concurrent requests before React re-renders the disabled button.
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setError(null);
     setLoading(true);
 
-    if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
-        setLoading(false);
-        return;
+    try {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+          return;
+        }
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } },
+        });
+        if (error) {
+          // A duplicate/race signup attempt (e.g. a double tap) can surface
+          // as a generic database error even though the account was in
+          // fact created by the first request. Point the user to login
+          // instead of a confusing raw error message.
+          const msg = error.message?.toLowerCase() ?? "";
+          if (
+            msg.includes("already registered") ||
+            msg.includes("already exists") ||
+            msg.includes("database error saving new user")
+          ) {
+            setError("يبدو أن هذا البريد مسجّل بالفعل. جرّب تسجيل الدخول بدلاً من إنشاء حساب جديد.");
+            setMode("login");
+          } else {
+            setError(error.message);
+          }
+          return;
+        }
+        if (!data.session) {
+          setError("تم إنشاء الحساب! تحقق من بريدك الإلكتروني واضغط رابط التأكيد قبل تسجيل الدخول.");
+          return;
+        }
       }
-    } else {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName } },
-      });
-      if (error) {
-        setError(error.message);
-        setLoading(false);
-        return;
-      }
-      if (!data.session) {
-        setError("تم إنشاء الحساب! تحقق من بريدك الإلكتروني واضغط رابط التأكيد قبل تسجيل الدخول.");
-        setLoading(false);
-        return;
-      }
-    }
 
-    router.push("/dashboard");
-    router.refresh();
+      router.push("/dashboard");
+      router.refresh();
+    } finally {
+      submittingRef.current = false;
+      setLoading(false);
+    }
   }
 
   return (
